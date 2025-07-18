@@ -249,9 +249,9 @@ app.post('/api/pago/mercadopago', async (req, res) => {
         email: email
       },
       back_urls: {
-        success: "http://localhost:3000/checkout?status=success",
-        failure: "http://localhost:3000/checkout?status=failure",
-        pending: "http://localhost:3000/checkout?status=pending"
+        success: "https://frontriocuartocelulares.vercel.app/checkout?status=success",
+        failure: "https://frontriocuartocelulares.vercel.app/checkout?status=failure",
+        pending: "https://frontriocuartocelulares.vercel.app/checkout?status=pending"
       },
       auto_return: "approved"
     };
