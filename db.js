@@ -9,8 +9,8 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'postgres',
-    logging: true,
+    dialect: 'postgres', // <-- ¡ESTO ES CLAVE!
+    logging: false,      // o una función, o false para evitar el warning
   }
 );
 
