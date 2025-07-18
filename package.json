@@ -17,9 +17,9 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mercadopago": "^2.8.0",
-    "mysql2": "^3.14.1",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
+    "psql": "^0.0.1",
     "sequelize": "^6.37.7",
     "socket.io": "^4.8.1"
   }
