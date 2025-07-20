@@ -21,7 +21,7 @@ const server = createServer(app);
 // Configurar Socket.io con CORS
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // URL de tu frontend
+    origin: "https://frontriocuartocelulares.vercel.app", // URL de tu frontend
     methods: ["GET", "POST"]
   }
 });
