@@ -8,18 +8,16 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT, // ¡Excelente que agregaste DB_PORT!
+    port: process.env.DB_PORT, 
     dialect: 'postgres',
-    logging: false, // o una función, o false para evitar el warning
+    logging: false, 
 
-    // **** ¡AGREGA ESTO! ****
     dialectOptions: {
       ssl: {
-        require: true,           // Forzar el uso de SSL
-        rejectUnauthorized: false // Ignorar la validación del certificado (necesario en Render)
+        require: true,          
+        rejectUnauthorized: false 
       }
     }
-    // **********************
   }
 );
 

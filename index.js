@@ -9,6 +9,8 @@ const express = require('express');
 const cors = require('cors');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 const sequelize = require('./db.js');
 const Producto = require('./models/Producto.js');
 const Admin = require('./models/Admin.js');
@@ -18,16 +20,39 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const server = createServer(app);
 
+// Configurar Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 // Configurar Socket.io con CORS
 const io = new Server(server, {
   cors: {
-    origin: "https://frontriocuartocelulares.vercel.app", // URL de tu frontend
+    origin: "https://frontriocuartocelulares.vercel.app", // URL del frontend
     methods: ["GET", "POST"]
   }
 });
 
 app.use(cors());
 app.use(express.json());
+
+// Configurar multer para subidas de archivos
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB máximo
+  },
+  fileFilter: (req, file, cb) => {
+    // Solo permitir imágenes
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos de imagen'), false);
+    }
+  }
+});
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecreto';
 
@@ -63,6 +88,37 @@ function emitStockUpdate(productoId, nuevoStock) {
     stock: nuevoStock
   });
 }
+
+// Endpoint para subir imágenes
+app.post('/api/upload', authMiddleware, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se proporcionó ningún archivo' });
+    }
+
+    // Convertir el buffer a base64
+    const base64Image = req.file.buffer.toString('base64');
+    const dataURI = `data:${req.file.mimetype};base64,${base64Image}`;
+
+    // Subir a Cloudinary
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'riocuartocelulares',
+      resource_type: 'auto',
+      transformation: [
+        { width: 800, height: 800, crop: 'limit' },
+        { quality: 'auto' }
+      ]
+    });
+
+    res.json({ 
+      url: result.secure_url,
+      public_id: result.public_id 
+    });
+  } catch (error) {
+    console.error('Error al subir imagen:', error);
+    res.status(500).json({ error: 'Error al subir la imagen' });
+  }
+});
 
 // Login admin
 app.post('/api/admin/login', async (req, res) => {
