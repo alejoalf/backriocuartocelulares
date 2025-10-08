@@ -334,3 +334,21 @@ const dns = require('dns');
 if (typeof dns.setDefaultResultOrder === 'function') {
   dns.setDefaultResultOrder('ipv4first');
 }
+
+// debug: comprobar cómo resuelve el host de la DB en este entorno
+const supaHost = (() => {
+  try {
+    const conn = process.env.PG_CONNECTION_STRING || process.env.DATABASE_URL || '';
+    const afterAt = conn.split('@')[1];
+    if (afterAt) return afterAt.split(':')[0];
+    return process.env.DB_HOST || null;
+  } catch (e) {
+    return null;
+  }
+})();
+if (supaHost) {
+  dns.lookup(supaHost, { all: true }, (err, addresses) => {
+    if (err) console.error('DNS lookup error for', supaHost, err);
+    else console.log('DNS lookup for', supaHost, addresses);
+  });
+}
