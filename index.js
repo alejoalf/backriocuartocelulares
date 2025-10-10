@@ -1,3 +1,9 @@
+// --- insert: forzar IPv4 AL PRINCIPIO (antes de cargar módulos que hacen DNS)
+const dns = require('dns');
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder('ipv4first');
+}
+
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -329,11 +335,6 @@ process.on('uncaughtException', err => {
 process.on('unhandledRejection', err => {
   console.error('Unhandled Rejection:', err);
 });
-
-const dns = require('dns');
-if (typeof dns.setDefaultResultOrder === 'function') {
-  dns.setDefaultResultOrder('ipv4first');
-}
 
 // debug: comprobar cómo resuelve el host de la DB en este entorno
 const supaHost = (() => {
